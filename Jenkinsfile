@@ -1,26 +1,18 @@
 pipeline {
     agent {
-        docker {
-      image 'maven:3.5.4-jdk-8'
-      args '-v /root/.m2:/root/.m2'
+        label "master"
     }
+    tools {
+        maven "Maven"
     }
-   
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
-        NEXUS_URL = "18.118.200.234:8081"
+        NEXUS_URL = "3.138.114.25:8081"
         NEXUS_REPOSITORY = "maven-nexus-repo"
-        NEXUS_CREDENTIAL_ID = "nexus-user-credentials"
+        NEXUS_CREDENTIAL_ID = "nexus-cred-new"
     }
     stages {
-        stage("Clone code from VCS") {
-            steps {
-                script {
-                    git 'https://github.com/islamsalah2020/cargotracker-java-app.git';
-                }
-            }
-        }
         
         stage("Maven Build") {
             steps {
@@ -38,7 +30,7 @@ pipeline {
                     artifactPath = filesByGlob[0].path;
                     artifactExists = fileExists artifactPath;
                     if(artifactExists) {
-                        echo "*** File: ${artifactPath}, group: ${pom.artifactId}, packaging: ${pom.packaging}, version: ${pom.version}";
+                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
                         nexusArtifactUploader(
                             nexusVersion: NEXUS_VERSION,
                             protocol: NEXUS_PROTOCOL,
